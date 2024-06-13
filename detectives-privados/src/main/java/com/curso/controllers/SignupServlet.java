@@ -15,8 +15,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.curso.models.RecaptchaResponse;
 import com.curso.utils.DatabaseUtil;
 import com.curso.utils.PasswordUtil;
+import com.google.gson.Gson;
 
 @WebServlet("/signup")
 public class SignupServlet extends HttpServlet {
@@ -56,8 +58,12 @@ public class SignupServlet extends HttpServlet {
 		String contentJSON = content.toString();
 		System.out.println(contentJSON);
 		
-		
-		
+		Gson gson = new Gson();
+		RecaptchaResponse recaptchaResp = gson.fromJson(contentJSON, RecaptchaResponse.class);
+		if (!recaptchaResp.isSuccess()) {
+			res.sendRedirect("signup.html");
+			return;
+		}
 		
 		
 		String hashedPassword = PasswordUtil.hashPassword(password);

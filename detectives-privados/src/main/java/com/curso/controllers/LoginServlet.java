@@ -5,13 +5,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.codecs.MySQLCodec;
@@ -77,8 +78,26 @@ public class LoginServlet extends HttpServlet {
 				
 				Usuario usuario = new Usuario(id, nombre, username, null, web, rol);
 				
-				req.setAttribute("usuario", usuario);
-				req.getRequestDispatcher("authenticated/home.jsp").forward(req, res);
+				Cookie galletita = new Cookie("galletita", "con_pepitas_de_chocolate");
+				galletita.setHttpOnly(true);
+				galletita.setMaxAge(50);
+				res.addCookie(galletita);
+				
+				HttpSession session = req.getSession(false);
+				if (session != null) {
+					session.invalidate();
+				}
+				
+				session = req.getSession(true);				
+				
+				session.setAttribute("usuario", usuario);
+				
+				
+				
+//				req.setAttribute("usuario", usuario);
+//				req.getRequestDispatcher("authenticated/home.jsp").forward(req, res);
+				
+				res.sendRedirect("authenticated/home.jsp");
 				
 			} else {
 				res.sendRedirect("login.html");
